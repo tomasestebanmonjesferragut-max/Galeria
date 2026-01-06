@@ -14,24 +14,29 @@
 <body>
     <div class="login-card">
         <h2>IDENTIDAD</h2>
-        <input type="password" id="pass" placeholder="Clave de acceso..." onkeypress="if(event.key==='Enter') check()">
+        <input type="password" id="pass" placeholder="Clave de acceso..." autocomplete="off">
         <button onclick="check()">ENTRAR</button>
     </div>
     <script>
     function check() {
-        if(document.getElementById('pass').value === 'Tomas2026') {
+        const input = document.getElementById('pass');
+        if(input.value === 'Tomas2026') {
             localStorage.setItem('auth', 'true');
+            input.value = ""; // Limpia el contenido antes de salir
             window.location.href = 'mural.html';
         } else { 
             alert("Acceso denegado."); 
+            input.value = ""; // Borra lo escrito si es incorrecto
         }
     }
 
-    // Escuchar la tecla Enter en toda la pantalla
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') check();
     });
-</script>
+    </script>
+</body>
+</html>
     
 </body>
+
 </html>
