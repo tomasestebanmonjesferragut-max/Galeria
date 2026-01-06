@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Mural Premium | Elite Edition</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- ANIMACIONES Y EFECTOS --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px) rotate(-2deg); }
+            to { opacity: 1; transform: translateY(0) rotate(var(--rotacion-final)); }
+        }
+
+        @keyframes pulsado {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff; }
+            to { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #b30000; }
+        }
+
+        @keyframes dance {
+            from { height: 5px; }
+            to { height: 25px; }
+        }
+
+        /* --- ESTILOS GENERALES --- */
+        body {
+            background: #050505;
+            margin: 0;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #canvas-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .neon-title {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 15px;
+            margin: 0;
+            animation: pulsado 2s infinite alternate;
+        }
+
+        .cursive-msg {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: rgba(255,255,255,0.9);
+            margin-top: 15px;
+            line-height: 1.4;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        }
+
+        /* --- GALERÍA --- */
+        .photo-item {
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+            filter: grayscale(30%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+
+        .photo-item:hover {
+            filter: grayscale(0%);
+            transform: scale(1.08) rotate(0deg) !important;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            z-index: 50;
+        }
+
+        /* --- INTERFAZ --- */
+        .floating-btn {
+            position: fixed; width: 60px; height: 60px; border-radius: 50%;
+            border: none; color: white; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; font-size: 1.5rem;
+            transition: 0.4s; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+        .floating-btn:hover { transform: scale(1.15); }
+
+        .btn-add { bottom: 30px; right: 30px; background: #b30000; }
+        .btn-music { bottom: 30px; left: 30px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+
+        .music-visualizer {
+            position: fixed; bottom: 100px; left: 45px;
+            display: flex; gap: 3px; height: 25px; align-items: flex-end; z-index: 1000;
+        }
+        .bar { width: 3px; background: #b30000; animation: dance 1s infinite alternate; display: none; }
+
+        .modal-glass {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
+            padding: 40px; border-radius: 30px; width: 320px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-particles"></canvas>
+
+    <a href="contacto.html" class="info-icons">
+        <img src="icono.jpg" class="moto-icon" alt="Contacto">
+    </a>
+
+    <div class="music-visualizer" id="visualizer">
+        <div class="bar" style="animation-delay: 0s"></div>
+        <div class="bar" style="animation-delay: 0.2s"></div>
+        <div class="bar" style="animation-delay: 0.4s"></div>
+    </div>
+
+    <button class="floating-btn btn-music" onclick="toggleMusica()" id="btn-musica">
+        <i class="fas fa-play"></i>
+    </button>
+
+    <button class="floating-btn btn-add" onclick="abrirModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <header style="text-align: center; padding: 100px 20px 50px 20px;">
+        <h1 class="neon-title">MI MURAL</h1>
+        <p class="cursive-msg">
+            Mi museo de mis fotos, <br> 
+            ¿qué podría ser más fascinante que compartir mi gusto con todos?
+        </p>
+    </header>
+
+    <div id="contenedor-fotos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 45px; padding: 0 50px 150px 50px;"></div>
+
+    <div id="modal-add" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center;">
+        <div class="modal-glass">
+            <h3 style="color: #333; margin-bottom: 20px;">NUEVO RECUERDO</h3>
+            <input type="password" id="admin-pass" placeholder="Contraseña Admin" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;">
+            <input type="file" id="file-in" accept="image/*" style="width:100%; margin-bottom:15px;">
+            <input type="text" id="caption-in" placeholder="Título..." style="width:100%; padding:12px; margin-bottom:20px; border-radius:10px; border:1px solid #ddd;">
+            <button onclick="savePhoto()" style="background:#b30000; color:white; border:none; padding:15px; border-radius:15px; width:100%; cursor:pointer; font-weight:bold;">GUARDAR</button>
+            <button onclick="cerrarModal()" style="background:none; border:none; margin-top:15px; cursor:pointer; color:#999;">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="lightbox" onclick="if(event.target == this) cerrarLightbox()" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 4000;">
+        <img id="lb-img" style="max-width: 90%; max-height: 70vh; border: 15px solid white; box-shadow: 0 0 50px rgba(0,0,0,0.5);">
+        <h2 id="lb-caption" style="font-family: 'Dancing Script'; font-size: 3rem; color: white; margin-top: 25px;"></h2>
+        <div style="display: flex; gap: 25px; margin-top: 30px;">
+            <button onclick="editCaption()" style="background:none; border:none; color:white; font-size: 1.8rem; cursor:pointer;"><i class="fas fa-edit"></i></button>
+            <button onclick="deletePhoto()" style="background:none; border:none; color:#ff4d4d; font-size: 1.8rem; cursor:pointer;"><i class="fas fa-trash-alt"></i></button>
+            <button onclick="cerrarLightbox()" style="background:rgba(255,255,255,0.1); border:none; color:white; width: 50px; height: 50px; border-radius: 50%; cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <audio id="musica" loop><source src="musica.mp3" type="audio/mpeg"></audio>
+
+    <script>
+        const CLAVE = "admin123";
+        let fotos = JSON.parse(localStorage.getItem('mural_db') || "[]");
+        let currentIdx = null;
+
+        /* --- CONTROL DE TECLADO --- */
+        window.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") { cerrarModal(); cerrarLightbox(); }
+            if (document.getElementById('lightbox').style.display === 'flex') {
+                if (e.key === "ArrowRight") navigate(1);
+                if (e.key === "ArrowLeft") navigate(-1);
+            }
+            if (document.getElementById('modal-add').style.display === 'flex' && e.key === "Enter") savePhoto();
+        });
+
+        function navigate(dir) {
+            currentIdx = (currentIdx + dir + fotos.length) % fotos.length;
+            actualizarLightbox();
+        }
+
+        function toggleMusica() {
+            const audio = document.getElementById('musica');
+            const btn = document.getElementById('btn-musica');
+            const bars = document.querySelectorAll('.bar');
+            if (audio.paused) {
+                audio.play();
+                btn.innerHTML = '<i class="fas fa-pause"></i>';
+                bars.forEach(b => b.style.display = 'block');
+            } else {
+                audio.pause();
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+                bars.forEach(b => b.style.display = 'none');
+            }
+        }
+
+        /* --- FUNCIONES GALERÍA --- */
+        function render() {
+            const cont = document.getElementById('contenedor-fotos');
+            cont.innerHTML = '';
+            fotos.forEach((f, i) => {
+                const d = document.createElement('div');
+                d.className = 'photo-item';
+                const rot = (Math.random() * 6 - 3).toFixed(1);
+                d.style.setProperty('--rotacion-final', `${rot}deg`);
+                d.style.animationDelay = `${i * 0.1}s`;
+                d.onclick = () => { currentIdx = i; actualizarLightbox(); document.getElementById('lightbox').style.display = 'flex'; };
+                d.innerHTML = `<img src="${f.src}"><p class="photo-caption">${f.txt}</p>`;
+                cont.appendChild(d);
+            });
+        }
+
+        function actualizarLightbox() {
+            document.getElementById('lb-img').src = fotos[currentIdx].src;
+            document.getElementById('lb-caption').innerText = fotos[currentIdx].txt;
+        }
+
+        function savePhoto() {
+            if(document.getElementById('admin-pass').value !== CLAVE) return alert("Contraseña incorrecta");
+            const file = document.getElementById('file-in').files[0];
+            if(!file) return alert("Selecciona una foto");
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                fotos.push({src: e.target.result, txt: document.getElementById('caption-in').value || "Nuestro Recuerdo"});
+                localStorage.setItem('mural_db', JSON.stringify(fotos));
+                render(); cerrarModal();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function deletePhoto() {
+            if(prompt("Contraseña Admin:") === CLAVE) {
+                fotos.splice(currentIdx, 1);
+                localStorage.setItem('mural_db', JSON.stringify(fotos));
+                render(); cerrarLightbox();
+            }
+        }
+
+        function editCaption() {
+            if(prompt("Contraseña Admin:") === CLAVE) {
+                const n = prompt("Nuevo nombre:", fotos[currentIdx].txt);
+                if(n) { fotos[currentIdx].txt = n; localStorage.setItem('mural_db', JSON.stringify(fotos)); render(); actualizarLightbox(); }
+            }
+        }
+
+        function abrirModal() { document.getElementById('modal-add').style.display = 'flex'; }
+        function cerrarModal() { document.getElementById('modal-add').style.display = 'none'; }
+        function cerrarLightbox() { document.getElementById('lightbox').style.display = 'none'; }
+
+        /* --- PARTÍCULAS --- */
+        const canvas = document.getElementById('canvas-particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+        class Particle {
+            constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 2; this.speedY = Math.random() * 0.5; this.opacity = Math.random(); }
+            update() { this.y -= this.speedY; if (this.y < 0) this.y = canvas.height; }
+            draw() { ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        for (let i = 0; i < 50; i++) particles.push(new Particle());
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+        animate();
+
+        window.onload = render;
+    </script>
+</body>
+</html>

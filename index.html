@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Identidad | Acceso</title>
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #0a0a0a; font-family: sans-serif; }
+        .login-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); padding: 50px; border-radius: 30px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); width: 300px; }
+        h2 { color: white; letter-spacing: 5px; margin-bottom: 30px; }
+        input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: none; border-radius: 50px; color: white; text-align: center; margin-bottom: 20px; outline: none; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #b30000; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2>IDENTIDAD</h2>
+        <input type="password" id="pass" placeholder="Clave de acceso..." onkeypress="if(event.key==='Enter') check()">
+        <button onclick="check()">ENTRAR</button>
+    </div>
+    <script>
+    function check() {
+        if(document.getElementById('pass').value === 'Tomas2026') {
+            localStorage.setItem('auth', 'true');
+            window.location.href = 'mural.html';
+        } else { 
+            alert("Acceso denegado."); 
+        }
+    }
+
+    // Escuchar la tecla Enter en toda la pantalla
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') check();
+    });
+</script>
+    
+</body>
+</html>

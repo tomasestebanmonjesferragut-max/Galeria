@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto | Redes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            background-attachment: fixed; background-size: cover; background-position: center;
+            /* Fondos originales */
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('fondo_pc.jpg');
+            font-family: 'Montserrat', sans-serif;
+        }
+        @media (max-aspect-ratio: 1/1) {
+            body { background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('fondo_cl.jpg'); }
+        }
+
+        .card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 35px; 
+            text-align: center; 
+            width: 85%; 
+            max-width: 320px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6); 
+        }
+
+        .profile-img { 
+            width: 110px; 
+            height: 110px; 
+            border-radius: 50%; 
+            border: 4px solid #b30000; 
+            object-fit: cover; 
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(179, 0, 0, 0.3);
+        }
+        
+        h3 { color: #333; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; font-size: 1.2rem; }
+
+        .btn-link { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px; 
+            margin: 15px 0; 
+            padding: 12px;
+            text-decoration: none; 
+            color: #333; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            border: 2px solid #f0f0f0;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .btn-link:hover { 
+            transform: translateY(-3px); 
+            border-color: #b30000;
+            background: #fff5f5;
+            color: #b30000;
+        }
+
+        .btn-link i { font-size: 1.8rem; }
+        .fa-instagram { color: #E1306C; }
+        .fa-whatsapp { color: #25D366; }
+        
+        .back-btn { 
+            display: inline-block; 
+            margin-top: 25px; 
+            color: #b30000; 
+            text-decoration: none; 
+            font-size: 0.85rem; 
+            font-weight: bold; 
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="icono.jpg" class="profile-img">
+        <h3>MIS CONTACTOS</h3>
+
+        <a href="https://www.instagram.com/zetac.r?igsh=eXpla2p3aDBpcGRl" class="btn-link" target="_blank">
+            <i class="fab fa-instagram"></i> Instagram
+        </a>
+        
+        <a href="https://wa.me/56965854294" class="btn-link" target="_blank">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+
+        <a href="mural.html" class="back-btn">
+            <i class="fas fa-chevron-left"></i> VOLVER AL MURAL
+        </a>
+    </div>
+</body>
+</html>
