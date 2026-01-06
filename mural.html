@@ -208,17 +208,37 @@
         }
 
         function savePhoto() {
-            if(document.getElementById('admin-pass').value !== CLAVE) return alert("Contraseña incorrecta");
-            const file = document.getElementById('file-in').files[0];
-            if(!file) return alert("Selecciona una foto");
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                fotos.push({src: e.target.result, txt: document.getElementById('caption-in').value || "Nuestro Recuerdo"});
-                localStorage.setItem('mural_db', JSON.stringify(fotos));
-                render(); cerrarModal();
-            };
-            reader.readAsDataURL(file);
-        }
+    const passInput = document.getElementById('admin-pass');
+    const fileInput = document.getElementById('file-in');
+    const captionInput = document.getElementById('caption-in');
+
+    if(passInput.value !== CLAVE) {
+        alert("Contraseña incorrecta");
+        passInput.value = ""; // Limpia contraseña
+        return;
+    }
+
+    const file = fileInput.files[0];
+    if(!file) return alert("Selecciona una foto");
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        fotos.push({
+            src: e.target.result, 
+            txt: captionInput.value || "Nuestro Recuerdo"
+        });
+        localStorage.setItem('mural_db', JSON.stringify(fotos));
+        
+        // LIMPIEZA TOTAL DE CAMPOS
+        passInput.value = "";
+        fileInput.value = "";
+        captionInput.value = "";
+        
+        render(); 
+        cerrarModal();
+    };
+    reader.readAsDataURL(file);
+}
 
         function deletePhoto() {
             if(prompt("Contraseña Admin:") === CLAVE) {
@@ -236,7 +256,12 @@
         }
 
         function abrirModal() { document.getElementById('modal-add').style.display = 'flex'; }
-        function cerrarModal() { document.getElementById('modal-add').style.display = 'none'; }
+        function cerrarModal() { 
+    // Limpia los campos al cerrar aunque no se haya guardado nada
+    document.getElementById('admin-pass').value = "";
+    document.getElementById('file-in').value = "";
+    document.getElementById('caption-in').value = "";
+    document.getElementById('modal-add').style.display = 'none'; 
         function cerrarLightbox() { document.getElementById('lightbox').style.display = 'none'; }
 
         /* --- PARTÍCULAS --- */
@@ -257,4 +282,5 @@
         window.onload = render;
     </script>
 </body>
+
 </html>
