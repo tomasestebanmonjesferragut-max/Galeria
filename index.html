@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Zeta’s Glow Mural | Inicio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="stars"></canvas>
+    
+    <nav>
+        <div class="logo">ZETA'S MURAL</div>
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="mural.html">Mural</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <div style="height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <img src="icono.png" style="width: 120px; margin-bottom: 20px;">
+        <h1 style="font-size: 3.5rem; margin-bottom: 10px;">NUESTROS RECUERDOS</h1>
+        <p style="color: #aaa; margin-bottom: 30px;">Un espacio interactivo para guardar momentos inolvidables.</p>
+        <a href="mural.html" class="btn btn-pink">ENTRAR AL MURAL</a>
+    </div>
+
+    <script>
+        // Animación simple de estrellas
+        const canvas = document.getElementById('stars'); const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "white";
+            for(let i=0; i<80; i++) { ctx.globalAlpha = Math.random(); ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 2, 2); }
+        }
+        setInterval(draw, 150);
+    </script>
+</body>
+</html>

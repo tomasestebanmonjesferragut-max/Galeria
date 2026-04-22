@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Mural | Recuerdos</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <canvas id="stars"></canvas>
+
+    <nav>
+        <div class="logo">EL MURAL</div>
+        <div>
+            <button class="btn btn-blue" onclick="document.getElementById('fileInput').click()">+ AÑADIR FOTO</button>
+            <button class="btn btn-pink" onclick="descargarMural()">DESCARGAR MURAL</button>
+            <input type="file" id="fileInput" hidden accept="image/*" onchange="handleUpload(this)">
+        </div>
+    </nav>
+
+    <div class="grid-container" id="gallery">
+        </div>
+
+    <div class="music-controls">
+        <i class="fas fa-music" style="color: var(--neon-blue);"></i>
+        <audio id="bgMusic" controls loop>
+            <source src="musica.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script>
+        const gallery = document.getElementById('gallery');
+
+        // 1. CARGAR FOTOS AL ABRIR
+        window.onload = () => {
+            const savedPhotos = JSON.parse(localStorage.getItem('mural_data') || '[]');
+            savedPhotos.forEach(src => createPolaroid(src, false));
+            iniciarEstrellas();
+        };
+
+        // 2. MANEJAR SUBIDA DE FOTO
+        function handleUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    createPolaroid(e.target.result, true);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 3. CREAR ELEMENTO POLAROID
+        function createPolaroid(src, isNew) {
+            const div = document.createElement('div');
+            div.className = 'polaroid';
+            const randomRot = (Math.random() * 10 - 5).toFixed(1);
+            div.style.setProperty('--r', randomRot + 'deg');
+            
+            div.innerHTML = `<img src="${src}"><p style="color:#333; text-align:center; margin-top:10px; font-family:cursive;">Recuerdo ✨</p>`;
+            
+            // Botón para borrar foto individual
+            const delBtn = document.createElement('button');
+            delBtn.innerHTML = "×";
+            delBtn.style = "position:absolute; top:5px; right:5px; border:none; background:red; color:white; border-radius:50%; cursor:pointer; width:20px; height:20px;";
+            delBtn.onclick = () => { div.remove(); actualizarStorage(); };
+            div.appendChild(delBtn);
+
+            gallery.appendChild(div);
+
+            if(isNew) actualizarStorage();
+        }
+
+        // 4. GUARDAR EN EL NAVEGADOR (LocalStorage)
+        function actualizarStorage() {
+            const photos = [];
+            document.querySelectorAll('.polaroid img').forEach(img => photos.push(img.src));
+            localStorage.setItem('mural_data', JSON.stringify(photos));
+        }
+
+        // 5. DESCARGAR COMO IMAGEN
+        function descargarMural() {
+            html2canvas(gallery, { backgroundColor: '#0a0a0a' }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'nuestro-mural.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function iniciarEstrellas() {
+            const canvas = document.getElementById('stars'); const ctx = canvas.getContext('2d');
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            window.onresize = resize; resize();
+            function draw() {
+                ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "white";
+                for(let i=0; i<60; i++) { ctx.globalAlpha = Math.random(); ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 1, 1); }
+            }
+            setInterval(draw, 200);
+        }
+    </script>
+</body>
+</html>
